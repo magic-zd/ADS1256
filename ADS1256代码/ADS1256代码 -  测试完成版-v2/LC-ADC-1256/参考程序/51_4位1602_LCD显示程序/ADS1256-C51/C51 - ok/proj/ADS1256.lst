@@ -1,0 +1,229 @@
+C51 COMPILER V9.01   ADS1256                                                               10/27/2016 11:25:01 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE ADS1256
+OBJECT MODULE PLACED IN .\ADS1256.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\ADS1256\ADS1256.C BROWSE INCDIR(..\ADS1256;..\user) DEBUG OBJECTEXTEND P
+                    -RINT(.\ADS1256.lst) OBJECT(.\ADS1256.obj)
+
+line level    source
+
+   1          
+   2          #include <stdio.h>
+   3          #include "STC15F2K60S2.H"
+   4          #include "ADS1256.h"
+   5          
+   6                  
+   7          
+   8                  /*端口定义*/ 
+   9          
+  10                  sbit SCK  = P1^2;
+  11                  sbit DIN  = P1^3;
+  12                  sbit DOUT = P1^4;
+  13                  sbit DRDY = P1^5;
+  14                  sbit CS   = P1^6;
+  15          
+  16                  #define CS_0()          CS = 0
+  17                  #define CS_1()          CS = 1
+  18                  #define SCK_0()         SCK = 0
+  19                  #define SCK_1()         SCK = 1
+  20          
+  21                  #define ADS1256_DIN_0() DIN = 0
+  22                  #define ADS1256_DIN_1() DIN = 1
+  23          
+  24                  #define ADS1256_DRDY   DRDY
+  25                  #define ADS1256_DOUT   DOUT
+  26          
+  27          void delay_ms(u16);
+  28          
+  29          /*void Init_ADS1256_GPIO(void)
+  30          {
+  31                  ********************************************
+  32                          提示：写单片机程序配置I/O口时要注意方向，
+  33                          I/O口配置输出时推荐配置为推挽模式，有些老
+  34                          的51单片机没有推挽模式，推荐加 1K上拉电阻.
+  35                  ********************************************
+  36                  P1M1 = 0;
+  37                  P1M0 =0x4C; //配置 I O
+  38                  CS_1();
+  39          }*/
+  40          
+  41          
+  42          
+  43          static void ADS1256_DelaySCLK(void)
+  44          {
+  45   1              unsigned short i;
+  46   1      
+  47   1              /*
+  48   1                      取 5 时，实测高电平200ns, 低电平250ns <-- 不稳定
+  49   1                      取 10 以上，可以正常工作， 低电平400ns 高定400ns <--- 稳定
+  50   1              */
+  51   1              for (i = 0; i < 20; i++);
+  52   1      }
+  53          /*
+  54          *********************************************************************************************************
+C51 COMPILER V9.01   ADS1256                                                               10/27/2016 11:25:01 PAGE 2   
+
+  55          *       函 数 名: SPI_WriteByte
+  56          *       功能说明: 向SPI总线发送8个bit数据。 不带CS控制。
+  57          *       形    参: _data : 数据
+  58          *       返 回 值: 无
+  59          *********************************************************************************************************
+  60          */
+  61          void SPI_WriteByte(unsigned char TxData)
+  62          {
+  63   1              unsigned char i;
+  64   1              /*　ADS1256 要求 SCL高电平和低电平持续时间最小 200ns  */
+  65   1              for(i = 0; i < 8; i++)
+  66   1              {
+  67   2                      if (TxData & 0x80)
+  68   2                              ADS1256_DIN_1();
+  69   2                      else
+  70   2                              ADS1256_DIN_0();
+  71   2                      
+  72   2                      SCK_1();
+  73   2                      //ADS1256_DelaySCLK();
+  74   2                      TxData <<= 1;
+  75   2                      SCK_0();                        /* <----  ADS1256 是在SCK下降沿采样DIN数据, 数据必须维持 50nS */
+  76   2                      //ADS1256_DelaySCLK();
+  77   2              }
+  78   1              
+  79   1      } 
+  80          
+  81          /*
+  82          *********************************************************************************************************
+  83          *       函 数 名: SPI_ReadByte
+  84          *       功能说明: 从SPI总线接收8个bit数据。 不带CS控制。
+  85          *       形    参: 无
+  86          *       返 回 值: 无
+  87          *********************************************************************************************************
+  88          */
+  89          unsigned char SPI_ReadByte(void)
+  90          {
+  91   1              unsigned char i;
+  92   1              unsigned char read = 0;
+  93   1      
+  94   1              //ADS1256_DelaySCLK();
+  95   1      
+  96   1              /*　ADS1256 要求 SCL高电平和低电平持续时间最小 200ns  */
+  97   1              for (i = 0; i < 8; i++)
+  98   1              {
+  99   2                      SCK_1();
+ 100   2                      ADS1256_DelaySCLK();
+ 101   2                      read = read<<1;
+ 102   2                      SCK_0();
+ 103   2                      if (ADS1256_DOUT)
+ 104   2                      {
+ 105   3                              read++;
+ 106   3                      }
+ 107   2                      ADS1256_DelaySCLK();
+ 108   2              }
+ 109   1              return read;
+ 110   1      }
+ 111          
+ 112          //-----------------------------------------------------------------//
+ 113          //      功    能：ADS1256 写数据
+ 114          //      入口参数: /
+ 115          //      出口参数: /
+ 116          //      全局变量: /
+C51 COMPILER V9.01   ADS1256                                                               10/27/2016 11:25:01 PAGE 3   
+
+ 117          //      备    注: 向ADS1256中地址为regaddr的寄存器写入一个字节databyte
+ 118          //-----------------------------------------------------------------//
+ 119          void ADS1256WREG(unsigned char regaddr,unsigned char databyte)
+ 120          {
+ 121   1          
+ 122   1              CS_0();
+ 123   1              while(ADS1256_DRDY);//当ADS1256_DRDY为低时才能写寄存器
+ 124   1              //向寄存器写入数据地址
+ 125   1          SPI_WriteByte(ADS1256_CMD_WREG | (regaddr & 0x0F));
+ 126   1          //写入数据的个数n-1
+ 127   1          SPI_WriteByte(0x00);
+ 128   1          //向regaddr地址指向的寄存器写入数据databyte
+ 129   1          SPI_WriteByte(databyte);
+ 130   1              CS_1();
+ 131   1      }
+ 132          
+ 133          
+ 134          //初始化ADS1256
+ 135          void ADS1256_Init(void)
+ 136          {
+ 137   1      
+ 138   1              //*************自校准****************
+ 139   1              while(ADS1256_DRDY);
+ 140   1              CS_0();
+ 141   1              SPI_WriteByte(ADS1256_CMD_SELFCAL);
+ 142   1              while(ADS1256_DRDY);
+ 143   1              CS_1();
+ 144   1              //**********************************
+ 145   1      
+ 146   1              ADS1256WREG(ADS1256_STATUS,0x06);               // 高位在前、校准、使用缓冲
+ 147   1      //      ADS1256WREG(ADS1256_STATUS,0x04);               // 高位在前、不使用缓冲
+ 148   1      //      ADS1256WREG(ADS1256_MUX,0x08);                  // 初始化端口A0为‘+’，AINCOM位‘-’
+ 149   1              ADS1256WREG(ADS1256_ADCON,ADS1256_GAIN_1);      // 放大倍数1
+ 150   1              ADS1256WREG(ADS1256_DRATE,ADS1256_DRATE_10SPS); // 数据5sps
+ 151   1              ADS1256WREG(ADS1256_IO,0x00);  
+ 152   1                           
+ 153   1              //*************自校准****************
+ 154   1              while(ADS1256_DRDY);
+ 155   1              CS_0();
+ 156   1              SPI_WriteByte(ADS1256_CMD_SELFCAL);
+ 157   1              while(ADS1256_DRDY);
+ 158   1              CS_1(); 
+ 159   1              //**********************************
+ 160   1      
+ 161   1      }
+ 162          
+ 163          
+ 164          //读取AD值
+ 165          signed long ADS1256ReadData(unsigned char channel)  
+ 166          {
+ 167   1      
+ 168   1          signed long sum=0;
+ 169   1              char i;
+ 170   1              unsigned long r=0;
+ 171   1              
+ 172   1              while(ADS1256_DRDY);//当ADS1256_DRDY为低时才能写寄存器 
+ 173   1              ADS1256WREG(ADS1256_MUX,channel);               //设置通道
+ 174   1              CS_0();
+ 175   1              SPI_WriteByte(ADS1256_CMD_SYNC);//外同步AD信号，启动转换
+ 176   1              SPI_WriteByte(ADS1256_CMD_WAKEUP);//完成同步并退出待机模式        
+ 177   1              while(ADS1256_DRDY);    
+ 178   1              SPI_WriteByte(ADS1256_CMD_RDATA);
+C51 COMPILER V9.01   ADS1256                                                               10/27/2016 11:25:01 PAGE 4   
+
+ 179   1              delay_ms(1);
+ 180   1              
+ 181   1              for(i=0;i<3;i++)
+ 182   1          {
+ 183   2              sum = sum << 8;
+ 184   2                      r = SPI_ReadByte();  
+ 185   2                      sum |= r;
+ 186   2              }       
+ 187   1      
+ 188   1              CS_1();
+ 189   1      
+ 190   1              if (sum>0x7FFFFF)           // if MSB=1, 
+ 191   1              {
+ 192   2                      sum -= 0x1000000;       // do 2's complement
+ 193   2              }
+ 194   1      
+ 195   1          return sum;
+ 196   1      }
+ 197          
+ 198          
+ 199          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    329    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       8
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -1,0 +1,4 @@
+".\main.obj",
+".\ADS1256.obj" 
+TO "ADS1256" 
+RAMSIZE(256) 

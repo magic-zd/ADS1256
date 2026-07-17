@@ -1,0 +1,169 @@
+C51 COMPILER V9.01   MAIN                                                                  10/27/2016 11:25:01 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\main.obj
+COMPILER INVOKED BY: C:\Keil\C51\BIN\C51.EXE ..\user\main.c BROWSE INCDIR(..\ADS1256;..\user) DEBUG OBJECTEXTEND PRINT(.
+                    -\main.lst) OBJECT(.\main.obj)
+
+line level    source
+
+   1          
+   2          
+   3          //单片机型号：STC15W408AS 
+   4          //      电压    ：5V 
+   5          //内部RC振荡：11.0592M
+   6          
+   7          
+   8          
+   9          #include <stdio.h>
+  10          #include "STC15F2K60S2.H"
+  11          #include "ADS1256.H"
+  12          
+  13          sbit LED = P5^5;
+  14          
+  15          
+  16          #define u8 unsigned char 
+  17          #define u16 unsigned short
+  18                                                                  
+  19          //      sbit SCK  = P1^2;
+  20          //      sbit DIN  = P1^3;
+  21          //      sbit DOUT = P1^4; 
+  22          //      sbit DRDY = P1^5;       
+  23          //      sbit CS   = P1^6;        
+  24                                                            
+  25          sbit LCD_EN=P2^7;
+  26          sbit LCD_RW=P2^6;
+  27          sbit LCD_RS=P2^5;
+  28          
+  29          #define LINE1_COLUMN(x) 0x7f+x
+  30          #define LINE2_COLUMN(x) 0xbf+x
+  31          
+  32          #define LCD_DATAPORT P0
+  33          
+  34          void DelayMs( unsigned int ms)
+  35          {
+  36   1              unsigned int i,j;
+  37   1              for (i = 0; i < ms; i++)
+  38   1                      for(j=0;j<115;j++);
+  39   1      }
+  40          
+  41          void delay_ms(u16 nms)
+  42          {
+  43   1              u16 x,y;
+  44   1              for(x=nms;x>0;x--)
+  45   1                      for(y=120;y>0;y--);
+  46   1      }
+  47          
+  48          void LCD1602_WriteCMD(u8 cmd)//LCD1602写命令函数
+  49          {
+  50   1               LCD_RS=0;
+  51   1               LCD_DATAPORT=cmd;
+  52   1               delay_ms(1);
+  53   1               LCD_EN=1;
+  54   1               delay_ms(1);
+C51 COMPILER V9.01   MAIN                                                                  10/27/2016 11:25:01 PAGE 2   
+
+  55   1               LCD_EN=0;
+  56   1      }
+  57          
+  58          void LCD1602_WriteData(u8 dat)//LCD1602写数据函数
+  59          {
+  60   1               LCD_RS=1;
+  61   1               LCD_DATAPORT=dat;
+  62   1               delay_ms(1);
+  63   1               LCD_EN=1;
+  64   1               delay_ms(1);
+  65   1               LCD_EN=0;
+  66   1      }
+  67          
+  68          void display_char(u8 addr,u8 chr)
+  69          {
+  70   1              LCD1602_WriteCMD(addr);
+  71   1              LCD1602_WriteData(chr);
+  72   1      }
+  73          
+  74          
+  75          
+  76          void display_num4(u8 addr,u16 num)
+  77          {
+  78   1              u8 qian,bai,shi,ge;
+  79   1              
+  80   1              qian= num/1000;
+  81   1              bai = num/100%10;
+  82   1              shi = num/10%10;
+  83   1              ge = num%10;                    //变量分离
+  84   1              display_char(addr,qian+'0');
+  85   1              display_char(addr+1,'.');
+  86   1              display_char(addr+2,bai+'0');
+  87   1              display_char(addr+3,shi+'0');
+  88   1              display_char(addr+4,ge+'0');
+  89   1      }
+  90          
+  91          
+  92          void LCD_Init(void)
+  93          {
+  94   1              LCD_EN=0;//打开片选
+  95   1              LCD_RW=0;//读写控制，1：读      
+  96   1                              //                       0：写   这里只写，不读
+  97   1              LCD1602_WriteCMD(0x38);
+  98   1              LCD1602_WriteCMD(0x0e);
+  99   1              LCD1602_WriteCMD(0x06);//地址指针自动加一，且光标加一
+ 100   1              LCD1602_WriteCMD(0x01);
+ 101   1              LCD1602_WriteCMD(0x80);
+ 102   1      }
+ 103          
+ 104          
+ 105          
+ 106          void main()
+ 107          {
+ 108   1              signed  long Adc;
+ 109   1              float  Volts;
+ 110   1      
+ 111   1              DelayMs(50);
+ 112   1        ADS1256_Init();                       //ADS1256 参数初始化
+ 113   1              LCD_Init();
+ 114   1              while(1)
+ 115   1              {
+ 116   2                      Adc = ADS1256ReadData( ADS1256_MUXP_AIN0|ADS1256_MUXN_AINCOM);  
+C51 COMPILER V9.01   MAIN                                                                  10/27/2016 11:25:01 PAGE 3   
+
+ 117   2                      Volts = Adc*0.00059453; // 0.00000059453 为系数，ADC生产出后都有一定的偏差，在此校准。
+ 118   2                      display_num4(LINE1_COLUMN(1),Volts);
+ 119   2                      delay_ms(100);
+ 120   2                      
+ 121   2                      Adc = ADS1256ReadData( ADS1256_MUXP_AIN1|ADS1256_MUXN_AINCOM);  
+ 122   2                      Volts = Adc*0.00059453; // 0.00000059453 为系数，ADC生产出后都有一定的偏差，在此校准。
+ 123   2                      display_num4(LINE1_COLUMN(8),Volts);
+ 124   2                      delay_ms(100);
+ 125   2                      
+ 126   2                      Adc = ADS1256ReadData( ADS1256_MUXP_AIN2|ADS1256_MUXN_AIN3);    
+ 127   2                      Volts = Adc*0.00059453; // 0.00000059453 为系数，ADC生产出后都有一定的偏差，在此校准。
+ 128   2                      display_num4(LINE2_COLUMN(1),Volts);
+ 129   2                      delay_ms(100);
+ 130   2                      
+ 131   2                  Adc = ADS1256ReadData( ADS1256_MUXP_AIN3|ADS1256_MUXN_AINCOM);      
+ 132   2                      Volts = Adc*0.00059453; // 0.00000059453 为系数，ADC生产出后都有一定的偏差，在此校准。
+ 133   2                      display_num4(LINE2_COLUMN(8),Volts);
+ 134   2                      
+ 135   2                      DelayMs(1000);
+ 136   2              }
+ 137   1      }
+ 138          
+ 139          
+ 140          
+ 141          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    489    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      12
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

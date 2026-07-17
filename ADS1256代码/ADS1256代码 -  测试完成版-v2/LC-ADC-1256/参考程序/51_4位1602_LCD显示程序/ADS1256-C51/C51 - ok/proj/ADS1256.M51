@@ -1,0 +1,460 @@
+BL51 BANKED LINKER/LOCATER V6.22                                                        10/27/2016  11:25:01  PAGE 1
+
+
+BL51 BANKED LINKER/LOCATER V6.22, INVOKED BY:
+C:\KEIL\C51\BIN\BL51.EXE .\main.obj, .\ADS1256.obj TO ADS1256 RAMSIZE (256)
+
+
+MEMORY MODEL: SMALL WITH FLOATING POINT ARITHMETIC
+
+
+INPUT MODULES INCLUDED:
+  .\main.obj (MAIN)
+  .\ADS1256.obj (ADS1256)
+  C:\KEIL\C51\LIB\C51FPS.LIB (?C?FPMUL)
+  C:\KEIL\C51\LIB\C51FPS.LIB (?C?FCAST)
+  C:\KEIL\C51\LIB\C51FPS.LIB (?C?CASTF)
+  C:\KEIL\C51\LIB\C51FPS.LIB (?C?FPGETOPN)
+  C:\KEIL\C51\LIB\C51S.LIB (?C_STARTUP)
+  C:\KEIL\C51\LIB\C51S.LIB (?C?UIDIV)
+  C:\KEIL\C51\LIB\C51S.LIB (?C?LNEG)
+  C:\KEIL\C51\LIB\C51S.LIB (?C?SLCMP)
+  C:\KEIL\C51\LIB\C51S.LIB (?C?LSHL)
+
+
+LINK MAP OF MODULE:  ADS1256 (MAIN)
+
+
+            TYPE    BASE      LENGTH    RELOCATION   SEGMENT NAME
+            -----------------------------------------------------
+
+            * * * * * * *   D A T A   M E M O R Y   * * * * * * *
+            REG     0000H     0008H     ABSOLUTE     "REG BANK 0"
+            DATA    0008H     0010H     UNIT         _DATA_GROUP_
+            IDATA   0018H     0001H     UNIT         ?STACK
+
+            * * * * * * *   C O D E   M E M O R Y   * * * * * * *
+            CODE    0000H     0003H     ABSOLUTE     
+            CODE    0003H     0251H     UNIT         ?C?LIB_CODE
+            CODE    0254H     00ECH     UNIT         ?PR?MAIN?MAIN
+            CODE    0340H     00AFH     UNIT         ?PR?_ADS1256READDATA?ADS1256
+            CODE    03EFH     0076H     UNIT         ?PR?_DISPLAY_NUM4?MAIN
+            CODE    0465H     003BH     UNIT         ?PR?ADS1256_INIT?ADS1256
+            CODE    04A0H     002DH     UNIT         ?PR?_DELAY_MS?MAIN
+            CODE    04CDH     0020H     UNIT         ?PR?_DELAYMS?MAIN
+            CODE    04EDH     001DH     UNIT         ?PR?LCD_INIT?MAIN
+            CODE    050AH     001CH     UNIT         ?PR?SPI_READBYTE?ADS1256
+            CODE    0526H     001BH     UNIT         ?PR?_ADS1256WREG?ADS1256
+            CODE    0541H     0019H     UNIT         ?PR?_SPI_WRITEBYTE?ADS1256
+            CODE    055AH     000FH     UNIT         ?PR?ADS1256_DELAYSCLK?ADS1256
+            CODE    0569H     000DH     UNIT         ?PR?_DISPLAY_CHAR?MAIN
+            CODE    0576H     000CH     UNIT         ?C_C51STARTUP
+            CODE    0582H     0008H     UNIT         ?PR?_LCD1602_WRITECMD?MAIN
+            CODE    058AH     0008H     UNIT         ?PR?_LCD1602_WRITEDATA?MAIN
+
+
+
+OVERLAY MAP OF MODULE:   ADS1256 (MAIN)
+
+
+SEGMENT                                 DATA_GROUP 
+  +--> CALLED SEGMENT                 START    LENGTH
+BL51 BANKED LINKER/LOCATER V6.22                                                      10/27/2016  11:25:01  PAGE 2
+
+
+-----------------------------------------------------
+?C_C51STARTUP                         -----    -----
+  +--> ?PR?MAIN?MAIN
+
+?PR?MAIN?MAIN                         0008H    0008H
+  +--> ?PR?_DELAYMS?MAIN
+  +--> ?PR?ADS1256_INIT?ADS1256
+  +--> ?PR?LCD_INIT?MAIN
+  +--> ?PR?_ADS1256READDATA?ADS1256
+  +--> ?PR?_DISPLAY_NUM4?MAIN
+  +--> ?PR?_DELAY_MS?MAIN
+
+?PR?ADS1256_INIT?ADS1256              -----    -----
+  +--> ?PR?_SPI_WRITEBYTE?ADS1256
+  +--> ?PR?_ADS1256WREG?ADS1256
+
+?PR?_ADS1256WREG?ADS1256              -----    -----
+  +--> ?PR?_SPI_WRITEBYTE?ADS1256
+
+?PR?LCD_INIT?MAIN                     -----    -----
+  +--> ?PR?_LCD1602_WRITECMD?MAIN
+
+?PR?_LCD1602_WRITECMD?MAIN            -----    -----
+  +--> ?PR?_DELAY_MS?MAIN
+
+?PR?_ADS1256READDATA?ADS1256          0010H    0008H
+  +--> ?PR?_ADS1256WREG?ADS1256
+  +--> ?PR?_SPI_WRITEBYTE?ADS1256
+  +--> ?PR?_DELAY_MS?MAIN
+  +--> ?PR?SPI_READBYTE?ADS1256
+
+?PR?SPI_READBYTE?ADS1256              -----    -----
+  +--> ?PR?ADS1256_DELAYSCLK?ADS1256
+
+?PR?_DISPLAY_NUM4?MAIN                0010H    0004H
+  +--> ?PR?_DISPLAY_CHAR?MAIN
+
+?PR?_DISPLAY_CHAR?MAIN                -----    -----
+  +--> ?PR?_LCD1602_WRITECMD?MAIN
+  +--> ?PR?_LCD1602_WRITEDATA?MAIN
+
+?PR?_LCD1602_WRITEDATA?MAIN           -----    -----
+  +--> ?PR?_DELAY_MS?MAIN
+
+
+
+SYMBOL TABLE OF MODULE:  ADS1256 (MAIN)
+
+  VALUE           TYPE          NAME
+  ----------------------------------
+
+  -------         MODULE        MAIN
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+BL51 BANKED LINKER/LOCATER V6.22                                                      10/27/2016  11:25:01  PAGE 3
+
+
+  D:00C0H         PUBLIC        P4
+  D:00C8H         PUBLIC        P5
+  D:00E8H         PUBLIC        P6
+  D:00F8H         PUBLIC        P7
+  C:058AH         PUBLIC        _LCD1602_WriteData
+  D:00A8H         PUBLIC        IE
+  D:00B8H         PUBLIC        IP
+  D:00D8H         PUBLIC        CCON
+  C:0254H         PUBLIC        main
+  C:04CDH         PUBLIC        _DelayMs
+  D:0098H         PUBLIC        SCON
+  D:0088H         PUBLIC        TCON
+  B:00A0H.7       PUBLIC        LCD_EN
+  C:04EDH         PUBLIC        LCD_Init
+  C:04AFH         PUBLIC        _delay_ms
+  B:00A0H.5       PUBLIC        LCD_RS
+  B:00A0H.6       PUBLIC        LCD_RW
+  C:03EFH         PUBLIC        _display_num4
+  C:0582H         PUBLIC        _LCD1602_WriteCMD
+  D:00D0H         PUBLIC        PSW
+  C:056CH         PUBLIC        _display_char
+  -------         PROC          _DELAYMS
+  D:0006H         SYMBOL        ms
+  -------         DO            
+  D:0004H         SYMBOL        i
+  D:0002H         SYMBOL        j
+  -------         ENDDO         
+  C:04CDH         LINE#         34
+  C:04CDH         LINE#         35
+  C:04CDH         LINE#         37
+  C:04D7H         LINE#         38
+  C:04ECH         LINE#         39
+  -------         ENDPROC       _DELAYMS
+  -------         PROC          L?0027
+  -------         ENDPROC       L?0027
+  -------         PROC          _DELAY_MS
+  D:0006H         SYMBOL        nms
+  -------         DO            
+  D:0006H         SYMBOL        x
+  D:0004H         SYMBOL        y
+  -------         ENDDO         
+  C:04AFH         LINE#         41
+  C:04AFH         LINE#         42
+  C:04AFH         LINE#         44
+  C:04B8H         LINE#         45
+  C:04CCH         LINE#         46
+  -------         ENDPROC       _DELAY_MS
+  -------         PROC          _LCD1602_WRITECMD
+  D:0007H         SYMBOL        cmd
+  C:0582H         LINE#         48
+  C:0582H         LINE#         49
+  C:0582H         LINE#         50
+  C:0584H         LINE#         51
+  C:0584H         LINE#         52
+  C:0584H         LINE#         53
+  C:0584H         LINE#         54
+  C:0587H         LINE#         55
+BL51 BANKED LINKER/LOCATER V6.22                                                      10/27/2016  11:25:01  PAGE 4
+
+
+  C:0589H         LINE#         56
+  -------         ENDPROC       _LCD1602_WRITECMD
+  -------         PROC          _LCD1602_WRITEDATA
+  D:0007H         SYMBOL        dat
+  C:058AH         LINE#         58
+  C:058AH         LINE#         59
+  C:058AH         LINE#         60
+  C:058CH         LINE#         61
+  C:058CH         LINE#         62
+  C:058CH         LINE#         63
+  C:058CH         LINE#         64
+  C:058FH         LINE#         65
+  C:0591H         LINE#         66
+  -------         ENDPROC       _LCD1602_WRITEDATA
+  -------         PROC          L?0028
+  -------         ENDPROC       L?0028
+  -------         PROC          _DISPLAY_CHAR
+  D:0007H         SYMBOL        addr
+  D:0003H         SYMBOL        chr
+  C:056CH         LINE#         68
+  C:056EH         LINE#         69
+  C:056EH         LINE#         70
+  C:0571H         LINE#         71
+  -------         ENDPROC       _DISPLAY_CHAR
+  -------         PROC          _DISPLAY_NUM4
+  D:0002H         SYMBOL        addr
+  D:0010H         SYMBOL        num
+  -------         DO            
+  D:0003H         SYMBOL        qian
+  D:0012H         SYMBOL        bai
+  D:0013H         SYMBOL        shi
+  D:0001H         SYMBOL        ge
+  -------         ENDDO         
+  C:03EFH         LINE#         76
+  C:03F5H         LINE#         77
+  C:03F5H         LINE#         80
+  C:0402H         LINE#         81
+  C:0416H         LINE#         82
+  C:042AH         LINE#         83
+  C:0437H         LINE#         84
+  C:043DH         LINE#         85
+  C:0445H         LINE#         86
+  C:044EH         LINE#         87
+  C:045AH         LINE#         88
+  -------         ENDPROC       _DISPLAY_NUM4
+  -------         PROC          LCD_INIT
+  C:04EDH         LINE#         92
+  C:04EDH         LINE#         93
+  C:04EDH         LINE#         94
+  C:04EFH         LINE#         95
+  C:04F1H         LINE#         97
+  C:04F6H         LINE#         98
+  C:04FBH         LINE#         99
+  C:0500H         LINE#         100
+  C:0505H         LINE#         101
+  -------         ENDPROC       LCD_INIT
+  -------         PROC          MAIN
+BL51 BANKED LINKER/LOCATER V6.22                                                      10/27/2016  11:25:01  PAGE 5
+
+
+  -------         DO            
+  D:0008H         SYMBOL        Adc
+  D:000CH         SYMBOL        Volts
+  -------         ENDDO         
+  C:0254H         LINE#         106
+  C:0254H         LINE#         107
+  C:0254H         LINE#         111
+  C:025BH         LINE#         112
+  C:025EH         LINE#         113
+  C:0261H         LINE#         114
+  C:0261H         LINE#         115
+  C:0261H         LINE#         116
+  C:026EH         LINE#         117
+  C:0285H         LINE#         118
+  C:0291H         LINE#         119
+  C:0298H         LINE#         121
+  C:02A5H         LINE#         122
+  C:02BCH         LINE#         123
+  C:02C8H         LINE#         124
+  C:02CFH         LINE#         126
+  C:02DCH         LINE#         127
+  C:02F3H         LINE#         128
+  C:02FFH         LINE#         129
+  C:0306H         LINE#         131
+  C:0313H         LINE#         132
+  C:032AH         LINE#         133
+  C:0336H         LINE#         135
+  C:033DH         LINE#         136
+  -------         ENDPROC       MAIN
+  -------         ENDMOD        MAIN
+
+  -------         MODULE        ADS1256
+  C:0000H         SYMBOL        _ICE_DUMMY_
+  D:0080H         PUBLIC        P0
+  D:0090H         PUBLIC        P1
+  D:00A0H         PUBLIC        P2
+  D:00B0H         PUBLIC        P3
+  D:00C0H         PUBLIC        P4
+  D:00C8H         PUBLIC        P5
+  D:00E8H         PUBLIC        P6
+  D:00F8H         PUBLIC        P7
+  D:00A8H         PUBLIC        IE
+  B:0090H.6       PUBLIC        CS
+  D:00B8H         PUBLIC        IP
+  C:0465H         PUBLIC        ADS1256_Init
+  C:0340H         PUBLIC        _ADS1256ReadData
+  D:00D8H         PUBLIC        CCON
+  C:055AH         SYMBOL        ADS1256_DelaySCLK
+  B:0090H.5       PUBLIC        DRDY
+  D:0098H         PUBLIC        SCON
+  D:0088H         PUBLIC        TCON
+  B:0090H.4       PUBLIC        DOUT
+  B:0090H.3       PUBLIC        DIN
+  C:0526H         PUBLIC        _ADS1256WREG
+  B:0090H.2       PUBLIC        SCK
+  C:050AH         PUBLIC        SPI_ReadByte
+  C:0541H         PUBLIC        _SPI_WriteByte
+BL51 BANKED LINKER/LOCATER V6.22                                                      10/27/2016  11:25:01  PAGE 6
+
+
+  D:00D0H         PUBLIC        PSW
+  -------         PROC          ADS1256_DELAYSCLK
+  -------         DO            
+  D:0006H         SYMBOL        i
+  -------         ENDDO         
+  C:055AH         LINE#         43
+  C:055AH         LINE#         44
+  C:055AH         LINE#         51
+  C:0568H         LINE#         52
+  -------         ENDPROC       ADS1256_DELAYSCLK
+  -------         PROC          _SPI_WRITEBYTE
+  D:0007H         SYMBOL        TxData
+  -------         DO            
+  D:0006H         SYMBOL        i
+  -------         ENDDO         
+  C:0541H         LINE#         61
+  C:0541H         LINE#         62
+  C:0541H         LINE#         65
+  C:0543H         LINE#         66
+  C:0543H         LINE#         67
+  C:0547H         LINE#         68
+  C:054BH         LINE#         70
+  C:054DH         LINE#         72
+  C:054FH         LINE#         74
+  C:0553H         LINE#         75
+  C:0555H         LINE#         77
+  C:0559H         LINE#         79
+  -------         ENDPROC       _SPI_WRITEBYTE
+  -------         PROC          SPI_READBYTE
+  -------         DO            
+  D:0004H         SYMBOL        i
+  D:0005H         SYMBOL        read
+  -------         ENDDO         
+  C:050AH         LINE#         89
+  C:050AH         LINE#         90
+  C:050AH         LINE#         92
+  C:050CH         LINE#         97
+  C:050DH         LINE#         98
+  C:050DH         LINE#         99
+  C:050FH         LINE#         100
+  C:0512H         LINE#         101
+  C:0516H         LINE#         102
+  C:0518H         LINE#         103
+  C:051BH         LINE#         104
+  C:051BH         LINE#         105
+  C:051CH         LINE#         106
+  C:051CH         LINE#         107
+  C:051FH         LINE#         108
+  C:0523H         LINE#         109
+  C:0525H         LINE#         110
+  -------         ENDPROC       SPI_READBYTE
+  -------         PROC          _ADS1256WREG
+  D:0007H         SYMBOL        regaddr
+  D:0005H         SYMBOL        databyte
+  C:0526H         LINE#         119
+  C:0526H         LINE#         120
+  C:0526H         LINE#         122
+BL51 BANKED LINKER/LOCATER V6.22                                                      10/27/2016  11:25:01  PAGE 7
+
+
+  C:0528H         LINE#         123
+  C:052BH         LINE#         125
+  C:0534H         LINE#         127
+  C:0539H         LINE#         129
+  C:053EH         LINE#         130
+  C:0540H         LINE#         131
+  -------         ENDPROC       _ADS1256WREG
+  -------         PROC          ADS1256_INIT
+  C:0465H         LINE#         135
+  C:0465H         LINE#         136
+  C:0465H         LINE#         139
+  C:0468H         LINE#         140
+  C:046AH         LINE#         141
+  C:046FH         LINE#         142
+  C:0472H         LINE#         143
+  C:0474H         LINE#         146
+  C:047BH         LINE#         149
+  C:0482H         LINE#         150
+  C:0489H         LINE#         151
+  C:0490H         LINE#         154
+  C:0493H         LINE#         155
+  C:0495H         LINE#         156
+  C:049AH         LINE#         157
+  C:049DH         LINE#         158
+  C:049FH         LINE#         161
+  -------         ENDPROC       ADS1256_INIT
+  -------         PROC          _ADS1256READDATA
+  D:0003H         SYMBOL        channel
+  -------         DO            
+  D:0010H         SYMBOL        sum
+  D:0003H         SYMBOL        i
+  D:0014H         SYMBOL        r
+  -------         ENDDO         
+  C:0340H         LINE#         165
+  C:0342H         LINE#         166
+  C:0342H         LINE#         168
+  C:034BH         LINE#         170
+  C:0353H         LINE#         172
+  C:0356H         LINE#         173
+  C:035DH         LINE#         174
+  C:035FH         LINE#         175
+  C:0364H         LINE#         176
+  C:0369H         LINE#         177
+  C:036CH         LINE#         178
+  C:0371H         LINE#         179
+  C:0378H         LINE#         181
+  C:037AH         LINE#         182
+  C:037AH         LINE#         183
+  C:038FH         LINE#         184
+  C:039BH         LINE#         185
+  C:03B2H         LINE#         186
+  C:03B6H         LINE#         188
+  C:03B8H         LINE#         190
+  C:03CEH         LINE#         191
+  C:03CEH         LINE#         192
+  C:03E6H         LINE#         193
+  C:03E6H         LINE#         195
+BL51 BANKED LINKER/LOCATER V6.22                                                      10/27/2016  11:25:01  PAGE 8
+
+
+  C:03EEH         LINE#         196
+  -------         ENDPROC       _ADS1256READDATA
+  -------         ENDMOD        ADS1256
+
+  -------         MODULE        ?C?FPMUL
+  C:0003H         PUBLIC        ?C?FPMUL
+  -------         ENDMOD        ?C?FPMUL
+
+  -------         MODULE        ?C?FCAST
+  C:0113H         PUBLIC        ?C?FCASTC
+  C:010EH         PUBLIC        ?C?FCASTI
+  C:0109H         PUBLIC        ?C?FCASTL
+  -------         ENDMOD        ?C?FCAST
+
+  -------         MODULE        ?C?CASTF
+  C:0147H         PUBLIC        ?C?CASTF
+  -------         ENDMOD        ?C?CASTF
+
+  -------         MODULE        ?C?UIDIV
+  C:01C8H         PUBLIC        ?C?UIDIV
+  -------         ENDMOD        ?C?UIDIV
+
+  -------         MODULE        ?C?LNEG
+  C:021DH         PUBLIC        ?C?LNEG
+  -------         ENDMOD        ?C?LNEG
+
+  -------         MODULE        ?C?SLCMP
+  C:022BH         PUBLIC        ?C?SLCMP
+  -------         ENDMOD        ?C?SLCMP
+
+  -------         MODULE        ?C?LSHL
+  C:0241H         PUBLIC        ?C?LSHL
+  -------         ENDMOD        ?C?LSHL
+
+Program Size: data=25.0 xdata=0 code=1426
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)
